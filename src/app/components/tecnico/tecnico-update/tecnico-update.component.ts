@@ -26,6 +26,9 @@ export class TecnicoUpdateComponent implements OnInit {
   cpf: FormControl = new FormControl(null, [Validators.required]);
   email: FormControl = new FormControl(null, [Validators.required, Validators.email]);
   senha: FormControl = new FormControl(null, [Validators.required, Validators.minLength(3)]);
+  cbAdmin: FormControl = new FormControl(null);
+  cbClient: FormControl = new FormControl(null);
+  cbTec: FormControl = new FormControl(null);
 
   // 3322-9270
   // adm@lladministracoes.com.br
@@ -47,12 +50,25 @@ export class TecnicoUpdateComponent implements OnInit {
 
   findById(): void {
     this.service.findbyId(this.tecnico.id).subscribe(resposta => {
-      resposta.perfis = [];
+      //resposta.perfis = [];
       this.tecnico = resposta;
+      for(let p of this.tecnico.perfis){
+        if( p == "TECNICO")
+          this.cbTec.setValue(true);
+        if( p == "ADMIN")
+          this.cbAdmin.setValue(true);
+        if( p == "CLIENTE")
+          this.cbClient.setValue(true);
+      }
     });
   }
 
   update() {
+    this.tecnico.perfis = [];
+    if(this.cbAdmin.value)  this.tecnico.perfis.push("0");
+    if(this.cbClient.value) this.tecnico.perfis.push("1");
+    if(this.cbTec.value)    this.tecnico.perfis.push("2");
+    
     this.service.update(this.tecnico).subscribe(resposta => {
       this.toast.success('Tecnico atualizado com sucesso.', 'Update')
       this.router.navigate(['tecnicos'])
@@ -76,4 +92,7 @@ export class TecnicoUpdateComponent implements OnInit {
     }
   }
 
+  buildPerfil(){
+
+  }
 }
