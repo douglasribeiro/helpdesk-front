@@ -26,6 +26,9 @@ export class ClienteUpdateComponent implements OnInit {
   cpf: FormControl = new FormControl(null, [Validators.required]);
   email: FormControl = new FormControl(null, [Validators.required, Validators.email]);
   senha: FormControl = new FormControl(null, [Validators.required, Validators.minLength(3)]);
+  cbAdmin: FormControl = new FormControl(null);
+  cbClient: FormControl = new FormControl(null);
+  cbTec: FormControl = new FormControl(null);
 
   // 3322-9270
   // adm@lladministracoes.com.br
@@ -47,12 +50,24 @@ export class ClienteUpdateComponent implements OnInit {
 
   findById(): void {
     this.service.findbyId(this.cliente.id).subscribe(resposta => {
-      resposta.perfis = [];
+      //resposta.perfis = [];
       this.cliente = resposta;
+      for(let p of this.cliente.perfis){
+        if( p == "TECNICO")
+          this.cbTec.setValue(true);
+        if( p == "ADMIN")
+          this.cbAdmin.setValue(true);
+        if( p == "CLIENTE")
+          this.cbClient.setValue(true);
+      }
     });
   }
 
   update() {
+    this.cliente.perfis = [];
+    if(this.cbAdmin.value)  this.cliente.perfis.push("0");
+    if(this.cbClient.value) this.cliente.perfis.push("1");
+    if(this.cbTec.value)    this.cliente.perfis.push("2");
     this.service.update(this.cliente).subscribe(resposta => {
       this.toast.success('Cliente atualizado com sucesso.', 'Update')
       this.router.navigate(['clientes'])
